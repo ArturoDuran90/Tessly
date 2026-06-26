@@ -1,0 +1,62 @@
+services:
+
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: tesla_dashboard
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - /mnt/AppPool/tesla-dashboard/mysql:/var/lib/mysql
+      - ./backend/src/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    networks:
+      - tesla-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: tesla_dashboard
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      TESLA_CLIENT_ID: ${TESLA_CLIENT_ID}
+      TESLA_CLIENT_SECRET: ${TESLA_CLIENT_SECRET}
+      TESLA_REFRESH_TOKEN: ${TESLA_REFRESH_TOKEN}
+      ELECTRICITY_RATE: ${ELECTRICITY_RATE}
+      JWT_SECRET: ${JWT_SECRET}
+      PRIVATE_KEY_PATH: /keys/private-key.pem
+      APP_PASSWORD: ${APP_PASSWORD}
+    volumes:
+      - /mnt/AppPool/tesla-dashboard/keys:/keys:ro
+    networks:
+      - tesla-net
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./well-known:/usr/share/nginx/html/.well-known:ro
+      - /mnt/AppPool/tesla-dashboard/certs:/etc/letsencrypt:ro
+    networks:
+      - tesla-net
+
+networks:
+  tesla-net:
+    driver: bridge
