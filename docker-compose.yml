@@ -40,6 +40,7 @@ services:
       APP_PASSWORD: ${APP_PASSWORD}
     volumes:
       - /mnt/AppPool/tesla-dashboard/keys:/keys:ro
+      - ./.env:/app/.env
     networks:
       - tesla-net
 

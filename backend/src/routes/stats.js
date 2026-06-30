@@ -7,11 +7,11 @@ router.get('/', async (req, res) => {
     const [monthly] = await pool.query(`
       SELECT
         DATE_FORMAT(started_at, '%Y-%m') as month,
-        DATE_FORMAT(started_at, '%b %Y') as label,
+        DATE_FORMAT(MIN(started_at), '%b %Y') as label,
         COUNT(*) as trips,
         ROUND(SUM(miles_driven), 1) as miles,
-        ROUND(SUM(autopilot_miles), 1) as ap_miles,
-        ROUND(SUM(autopilot_miles) / NULLIF(SUM(miles_driven), 0) * 100, 1) as ap_pct
+        ROUND(COALESCE(SUM(autopilot_miles), 0), 1) as ap_miles,
+        ROUND(COALESCE(SUM(autopilot_miles), 0) / NULLIF(SUM(miles_driven), 0) * 100, 1) as ap_pct
       FROM trips
       WHERE ended_at IS NOT NULL
       GROUP BY DATE_FORMAT(started_at, '%Y-%m')
@@ -35,8 +35,7 @@ router.get('/', async (req, res) => {
     const [snapStats] = await pool.query(`
       SELECT
         DATE_FORMAT(recorded_at, '%Y-%m') as month,
-        ROUND(AVG(battery_level), 1) as avg_battery,
-        ROUND(AVG(outside_temp) * 9/5 + 32, 1) as avg_temp_f
+        ROUND(AVG(battery_level), 1) as avg_battery
       FROM snapshots
       GROUP BY DATE_FORMAT(recorded_at, '%Y-%m')
       ORDER BY month DESC
@@ -46,11 +45,12 @@ router.get('/', async (req, res) => {
     const merged = monthly.map(m => {
       const c = charging.find(x => x.month === m.month) || {}
       const s = snapStats.find(x => x.month === m.month) || {}
-      return { ...m, kwh: c.kwh, cost: c.cost, sessions: c.sessions, avg_battery: s.avg_battery, avg_temp_f: s.avg_temp_f }
+      return { ...m, kwh: c.kwh, cost: c.cost, sessions: c.sessions, avg_battery: s.avg_battery }
     })
 
     res.json(merged)
   } catch (err) {
+    console.error('[stats] error:', err.message)
     res.status(500).json({ error: err.message })
   }
 })

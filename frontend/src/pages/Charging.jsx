@@ -10,7 +10,7 @@ function SessionRow({ session }) {
   const mins = Math.round(durationMs / 60000)
   const duration = mins < 60 ? mins + ' min' : (mins / 60).toFixed(1) + ' hr'
 
-  const kwh = session.kwh_added ? session.kwh_added.toFixed(2) : '--'
+  const kwh = session.kwh_added ? parseFloat(session.kwh_added).toFixed(2) : '--'
   const cost = session.cost_usd ? '$' + parseFloat(session.cost_usd).toFixed(2) : '--'
 
   return (

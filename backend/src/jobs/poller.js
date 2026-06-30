@@ -152,6 +152,8 @@ async function poll() {
       await handleBatteryHealth(vehicleId, data)
       await handleCharging(vehicleId, data)
 
+      const odometer = drive?.odometer || data.vehicle_state?.odometer || null
+
       await pool.query(
         `INSERT INTO snapshots
           (vehicle_id, battery_level, rated_range, odometer, latitude, longitude, is_charging, is_plugged_in, outside_temp, autopilot_active, autopilot_state)
@@ -160,7 +162,7 @@ async function poll() {
           vehicleId,
           charge?.battery_level,
           charge?.battery_range,
-          drive?.odometer,
+          odometer,
           drive?.latitude,
           drive?.longitude,
           charge?.charging_state === 'Charging',
