@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from 'recharts'
 import NavBar from '../components/NavBar'
 import HamburgerMenu from '../components/HamburgerMenu'
 
@@ -142,15 +142,52 @@ export default function Dashboard() {
 
       {history.length > 1 && (
         <div style={{ margin: '0 16px 12px', background: '#1a1a1a', borderRadius: '14px', padding: '14px', border: '0.5px solid #2a2a2a' }}>
-          <div style={{ fontSize: '11px', color: '#666', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: '12px' }}>Battery history</div>
-          <ResponsiveContainer width="100%" height={80}>
-            <LineChart data={history}>
-              <XAxis dataKey="time" hide />
-              <YAxis domain={[0, 100]} hide />
-              <Tooltip content={<CustomTooltip />} />
-              <Line type="monotone" dataKey="battery" stroke="#E31937" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#E31937' }} />
-            </LineChart>
-          </ResponsiveContainer>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <div style={{ fontSize: '11px', color: '#666', textTransform: 'uppercase', letterSpacing: '.1em' }}>Battery history</div>
+            <div style={{ fontSize: '11px', color: '#555' }}>
+              {history.length} readings · last {Math.round(history.length * 5 / 60)}h
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', fontSize: '10px', color: '#555', paddingBottom: '20px', minWidth: '28px', textAlign: 'right' }}>
+              <span>100%</span>
+              <span>75%</span>
+              <span>50%</span>
+              <span>25%</span>
+              <span>0%</span>
+            </div>
+            <div style={{ flex: 1 }}>
+              <ResponsiveContainer width="100%" height={140}>
+                <LineChart data={history} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+                  <XAxis
+                    dataKey="time"
+                    tick={{ fill: '#555', fontSize: 10 }}
+                    tickLine={false}
+                    axisLine={{ stroke: '#2a2a2a' }}
+                    interval="preserveStartEnd"
+                    tickCount={4}
+                  />
+                  <YAxis domain={[0, 100]} hide />
+                  <CartesianGrid vertical={false} stroke="#222" strokeDasharray="3 3" />
+                  <Tooltip content={<CustomTooltip />} />
+                  <ReferenceLine y={20} stroke="#E31937" strokeDasharray="3 3" strokeOpacity={0.4} />
+                  <Line
+                    type="monotone"
+                    dataKey="battery"
+                    stroke="#E31937"
+                    strokeWidth={2}
+                    dot={{ fill: '#E31937', r: 2, strokeWidth: 0 }}
+                    activeDot={{ r: 5, fill: '#E31937' }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px', fontSize: '10px', color: '#444', paddingLeft: '36px' }}>
+            <span>Min: {Math.min(...history.map(h => h.battery))}%</span>
+            <span>Avg: {Math.round(history.reduce((a, h) => a + h.battery, 0) / history.length)}%</span>
+            <span>Max: {Math.max(...history.map(h => h.battery))}%</span>
+          </div>
         </div>
       )}
 

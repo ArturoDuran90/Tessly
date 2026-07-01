@@ -90,7 +90,7 @@ export default function Map() {
   }
 
   return (
-    <div style={{ background: '#0d0d0d', height: '100vh', color: '#fff', fontFamily: 'monospace', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ background: '#0d0d0d', height: '100vh', maxHeight: '100vh', color: '#fff', fontFamily: 'monospace', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 20px 12px', flexShrink: 0 }}>
         <div style={{ fontSize: '18px', fontWeight: 500 }}>Map</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -108,13 +108,13 @@ export default function Map() {
         </div>
       </div>
 
-      <div style={{ flex: 1, position: 'relative', marginBottom: '68px' }}>
+      <div style={{ flex: 1, position: 'relative', marginBottom: '72px', overflow: 'hidden' }}>
         {loading && (
           <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10, background: '#0d0d0d' }}>
             <div style={{ color: '#555', fontSize: '13px' }}>Loading map...</div>
           </div>
         )}
-        <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
+        <div ref={mapRef} style={{ width: '100%', height: '100%', paddingBottom: '0' }} />
       </div>
 
       <NavBar />
