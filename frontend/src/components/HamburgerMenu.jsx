@@ -32,15 +32,7 @@ export default function HamburgerMenu() {
             background: '#1a1a1a', border: '0.5px solid #2a2a2a',
             borderRadius: '12px', padding: '8px', minWidth: '160px'
           }}>
-            <button onClick={() => go('/commands')} style={{
-              display: 'flex', alignItems: 'center', gap: '10px',
-              width: '100%', padding: '10px 12px', background: 'none',
-              border: 'none', color: '#ccc', cursor: 'pointer',
-              fontSize: '13px', fontFamily: 'monospace', borderRadius: '8px', textAlign: 'left'
-            }}>
-              <i className="ti ti-terminal" style={{ fontSize: '16px', color: '#666' }} aria-hidden="true" />
-              Commands
-            </button>
+
             <button onClick={() => go('/settings')} style={{
               display: 'flex', alignItems: 'center', gap: '10px',
               width: '100%', padding: '10px 12px', background: 'none',

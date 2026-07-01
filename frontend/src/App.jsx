@@ -5,7 +5,6 @@ import Trips from './pages/Trips'
 import Charging from './pages/Charging'
 import Settings from './pages/Settings'
 import Map from './pages/Map'
-import Commands from './pages/Commands'
 import Stats from './pages/Stats'
 import Login from './pages/Login'
 
@@ -45,7 +44,6 @@ export default function App() {
         <Route path="/charging" element={<Charging />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/map" element={<Map />} />
-        <Route path="/commands" element={<Commands />} />
         <Route path="/stats" element={<Stats />} />
       </Routes>
     </BrowserRouter>

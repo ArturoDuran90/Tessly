@@ -10,7 +10,6 @@ app.get('/ping', (req, res) => {
 })
 
 app.use('/auth', require('./routes/auth'))
-app.use('/commands', require('./routes/commands'))
 app.use('/stats', require('./routes/stats'))
 app.use('/vehicles', require('./routes/vehicles'))
 app.use('/snapshots', require('./routes/snapshots'))
